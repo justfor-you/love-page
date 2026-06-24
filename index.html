@@ -83,6 +83,17 @@ function animate(){
         ctx.fillText("I LOVE YOU",x,y);
     });
 
+ctx.font = "bold 80px Arial";
+ctx.fillStyle = "white";
+ctx.shadowColor = "#ff0066";
+ctx.shadowBlur = 30;
+ctx.textAlign = "center";
+
+ctx.fillText(
+    "TPZ",
+    canvas.width/2,
+    canvas.height/2
+);
     requestAnimationFrame(animate);
 }
 
