@@ -1,51 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Do You Love Me?</title>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
 
 <style>
 body{
+    margin:0;
+    overflow:hidden;
+    background:linear-gradient(135deg,#ff5f8f,#ff9eb5);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial,sans-serif;
+}
+
+.center{
     text-align:center;
-    font-family:Arial;
-    margin-top:100px;
-    background:#ffe6f2;
+    color:white;
+    z-index:10;
+}
+
+.heart{
+    font-size:120px;
+    animation:beat 1s infinite;
+}
+
+h1{
+    font-size:50px;
 }
 
 button{
-    padding:10px 20px;
+    padding:15px 30px;
     font-size:20px;
-    margin:10px;
+    border:none;
+    border-radius:30px;
+    cursor:pointer;
 }
 
-#noBtn{
+.floating{
     position:absolute;
+    animation:fall 6s linear infinite;
+}
+
+@keyframes beat{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.25);}
+}
+
+@keyframes fall{
+    from{
+        transform:translateY(-100px);
+    }
+    to{
+        transform:translateY(110vh);
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Do you love me? ❤️</h1>
-
-<button onclick="yesAnswer()">Yes ❤️</button>
-<button id="noBtn">No 😢</button>
+<div class="center">
+    <div class="heart">❤️</div>
+    <h1>I LOVE YOU</h1>
+    <button onclick="showLove()">💌 Will You Be Mine?</button>
+</div>
 
 <script>
-function yesAnswer(){
-    document.body.innerHTML =
-    "<h1>I knew it! ❤️🥰</h1>";
+
+function showLove(){
+    document.body.innerHTML = 
+    <div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;color:white;">
+        <h1 style="font-size:70px;">❤️ I LOVE YOU ❤️</h1>
+        <h2>You Make My World Beautiful 🌹</h2>
+    </div>
+    ;
 }
 
-const noBtn = document.getElementById("noBtn");
+function createItem(){
+    let item=document.createElement("div");
 
-noBtn.addEventListener("mouseover", function(){
+    let symbols=["❤️","💖","🌹","💕"];
+    item.innerHTML=symbols[Math.floor(Math.random()*symbols.length)];
 
-    let x = Math.random() * (window.innerWidth - 100);
-    let y = Math.random() * (window.innerHeight - 100);
+    item.className="floating";
+    item.style.left=Math.random()*100+"vw";
+    item.style.fontSize=(20+Math.random()*40)+"px";
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-});
+    document.body.appendChild(item);
+
+    setTimeout(()=>{
+        item.remove();
+    },6000);
+}
+
+setInterval(createItem,250);
+
 </script>
 
 </body>
