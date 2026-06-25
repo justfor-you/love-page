@@ -1,125 +1,296 @@
-<!DOCTYPE html>
-<html>
+ <!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>I LOVE YOU ❤️</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TPZ LOVE PAGE ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Arial', sans-serif;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* အလယ်က နာမည်စာသား */
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 75px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 10;
+            letter-spacing: 5px;
+            transition: all 0.5s ease;
+        }
+        /* Neon Glow Style (3D အတွက်) */
+        .title.glow {
+            text-shadow: 0 0 20px #00a3ff, 0 0 30px #00a3ff;
+        }
+        /* Soft Pink Glow Style (2D အတွက်) */
+        .title.pink-glow {
+            text-shadow: 0 0 20px #ff0066, 0 0 30px #ff0066;
+        }
 
-<style>
-body{
-    margin:0;
-    overflow:hidden;
-    background:black;
-}
-
-canvas{
-    display:block;
-}
-</style>
+        /* ပုံစံပြောင်းမယ့် ခလုတ်များ တည်ဆောက်ပုံ */
+        .nav-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            background: white;
+            color: black;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
-
 <body>
-<canvas id="canvas"></canvas>
 
-<script>
+    <div id="mainTitle" class="title pink-glow">TPZ</div>
 
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
+    <div class="nav-container">
+        <button id="btn2D" class="nav-btn active" onclick="switchMode('2D')">Classic 2D ❤️</button>
+        <button id="btn3D" class="nav-btn" onclick="switchMode('3D')">Neon 3D 🌌</button>
+    </div>
 
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+    <canvas id="canvas2D"></canvas>
 
-// Window size ပြောင်းရင် canvas size ပါ လိုက်ပြောင်းပေးခြင်း
-window.addEventListener('resize', () => {
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-});
+    <script>
+        // --- (၁) Common Setting & State ---
+        let currentMode = '2D';
+        const mainTitle = document.getElementById('mainTitle');
 
-const stars=[];
+        // --- (၂) 2D HEART ANIMATION CODE (အဟောင်း) ---
+        const canvas2D = document.getElementById("canvas2D");
+        const ctx2D = canvas2D.getContext("2d");
 
-for(let i=0;i<200;i++){
-    stars.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        size:Math.random()*2
-    });
-}
+        canvas2D.width = window.innerWidth;
+        canvas2D.height = window.innerHeight;
 
-const heart=[];
+        const stars = [];
+        for(let i=0; i<200; i++){
+            stars.push({
+                x: Math.random()*canvas2D.width,
+                y: Math.random()*canvas2D.height,
+                size: Math.random()*2
+            });
+        }
 
-// နှလုံးသားရဲ့ ပတ်လည် line ပေါ်မှာပဲ စာသားရှိအောင် သေချာတွက်ချက်ထားခြင်း
-for(let t=0;t<Math.PI*2;t+=0.15){
+        const heart2D = [];
+        for(let t=0; t<Math.PI*2; t+=0.15){
+            let x = 16*Math.pow(Math.sin(t),3);
+            let y = -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+            heart2D.push({ x: x*18, y: y*18 });
+        }
 
-    let x=16*Math.pow(Math.sin(t),3);
-    let y=-(13*Math.cos(t)-5*Math.cos(2*t)
-          -2*Math.cos(3*t)-Math.cos(4*t));
+        function animate2D(){
+            if(currentMode !== '2D') return; // 2D mode မဟုတ်ရင် ရပ်ထားမယ်
 
-    heart.push({
-        x:x*18, // size ကို နည်းနည်းထိန်းထားပါတယ်
-        y:y*18
-    });
-}
+            ctx2D.fillStyle = "rgba(0,0,0,0.25)";
+            ctx2D.fillRect(0,0,canvas2D.width,canvas2D.height);
+            ctx2D.shadowBlur = 0;
 
-function animate(){
+            stars.forEach(s=>{
+                ctx2D.fillStyle = "white";
+                ctx2D.beginPath();
+                ctx2D.arc(s.x,s.y,s.size,0,Math.PI*2);
+                ctx2D.fill();
+                s.y += 0.2;
+                if(s.y > canvas2D.height) s.y = 0;
+            });
+ let scale = 1 + 0.08*Math.sin(Date.now()/400);
+            ctx2D.font = "bold 13px Arial";
+            ctx2D.textAlign = "center";
+            ctx2D.textBaseline = "middle";
 
-    ctx.fillStyle="rgba(0,0,0,0.25)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
+            heart2D.forEach((p)=>{
+                let x = canvas2D.width/2 + p.x*scale;
+                let y = canvas2D.height/2 + p.y*scale;
+                ctx2D.shadowColor = "#ff0066";
+                ctx2D.shadowBlur = 15;
+                ctx2D.fillStyle = "#ff4d88";
+                ctx2D.fillText("I LOVE YOU", x, y);
+            });
 
-    ctx.shadowBlur = 0;
+            // 2D မှာ နာမည်နောက်က စာသားကွယ်ပေးမယ့် အမှောင်ဝိုင်း
+            ctx2D.shadowBlur = 0;
+            ctx2D.fillStyle = "rgba(0,0,0,0.6)";
+            ctx2D.beginPath();
+            ctx2D.arc(canvas2D.width/2, canvas2D.height/2, 120, 0, Math.PI*2);
+            ctx2D.fill();
 
-    stars.forEach(s=>{
-        ctx.fillStyle="white";
-        ctx.beginPath();
-        ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
-        ctx.fill();
+            requestAnimationFrame(animate2D);
+        }
 
-        s.y+=0.2;
-        if(s.y>canvas.height) s.y=0;
-    });
+        // --- (၃) 3D HEART ANIMATION CODE (အသစ်) ---
+        let scene, camera, renderer, heartParticles, floor, clock;
+        let is3DInitialized = false;
 
-    let scale=1+0.08*Math.sin(Date.now()/400);
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 18;
 
-    // ၁။ နှလုံးသားပုံစံ "I LOVE YOU" စာသားများ ရေးဆွဲခြင်း
-    ctx.font="bold 13px Arial"; // စာသားကို ပိုသပ်ရပ်အောင် စာလုံးသေးပေးထားပါတယ်
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.domElement.id = "canvas3D";
+            renderer.domElement.style.position = "absolute";
+            renderer.domElement.style.top = "0";
+            renderer.domElement.style.left = "0";
+            renderer.domElement.style.display = "none"; // စစချင်း ဖျောက်ထားမယ်
+            document.body.appendChild(renderer.domElement);
 
-    heart.forEach((p,i)=>{
-        let x=canvas.width/2+p.x*scale;
-        let y=canvas.height/2+p.y*scale;
+            const particleCount = 4500;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
 
-        ctx.shadowColor="#ff0066";
-        ctx.shadowBlur=15;
-        ctx.fillStyle="#ff4d88";
+            const color1 = new THREE.Color('#00a3ff');
+            const color2 = new THREE.Color('#0055ff');
 
-        ctx.fillText("I LOVE YOU",x,y);
-    });
+            for (let i = 0; i < particleCount; i++) {
+                const t = Math.PI * 2 * Math.random();
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+                const z = (Math.random() - 0.5) * 6;
 
-    // ၂။ အလယ်က နာမည်နောက်ခံကို စာသားတွေနဲ့ မရောအောင် အဝိုင်းမှိန်မှိန်လေး ခံပေးခြင်း
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = "rgba(0,0,0,0.6)"; // နာမည်နောက်က စာသားတွေကို ဖုံးကွယ်ပေးမယ့် အမှောင် Layer
-    ctx.beginPath();
-    ctx.arc(canvas.width/2, canvas.height/2, 120, 0, Math.PI*2);
-    ctx.fill();
+                const scale = 0.55 + Math.random() * 0.15;
+                positions[i * 3] = x * scale;
+                positions[i * 3 + 1] = y * scale * 0.9;
+                positions[i * 3 + 2] = z;
 
-    // ၃။ "TPZ" နာမည်ကို အပေါ်ဆုံး Layer ကနေ အကြီးကြီး ထင်ထင်ရှားရှား ရေးဆွဲခြင်း
-    ctx.font = "bold 85px Arial";
-    ctx.fillStyle = "#ffffff";
-    ctx.shadowColor = "#ff0066";
-    ctx.shadowBlur = 35;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+                const mixedColor = color1.clone().lerp(color2, Math.random());
+                colors[i * 3] = mixedColor.r;
+                colors[i * 3 + 1] = mixedColor.g;
+                colors[i * 3 + 2] = mixedColor.b;
+            }
 
-    ctx.fillText(
-        "TPZ",
-        canvas.width/2,
-        canvas.height/2
-    );
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    requestAnimationFrame(animate);
-}
+            const pCanvas = document.createElement('canvas');
+            pCanvas.width = 16; pCanvas.height = 16;
+            const pCtx = pCanvas.getContext('2d');
+            const gradient = pCtx.createRadialGradient(8, 8, 0, 8, 8, 8);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            pCtx.fillStyle = gradient; pCtx.fillRect(0, 0, 16, 16);
+            const texture = new THREE.CanvasTexture(pCanvas);
 
-animate();
+            const material = new THREE.PointsMaterial({
+                size: 0.28, map: texture, vertexColors: true,
+                blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
+            const floorGeo = new THREE.PlaneGeometry(20, 20);
+            const floorMat = new THREE.MeshBasicMaterial({
+                color: 0x00a3ff, transparent: true, opacity: 0.05,
+                blending: THREE.AdditiveBlending, side: THREE.DoubleSide
+            });
+            floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = Math.PI / 2;
+            floor.position.y = -10;
+            scene.add(floor);
 
-</script>
+            clock = new THREE.Clock();
+            is3DInitialized = true;
+        }
+
+        function animate3D() {
+            if(currentMode !== '3D') return;
+
+            requestAnimationFrame(animate3D);
+            const elapsedTime = clock.getElapsedTime();
+
+            heartParticles.rotation.y = elapsedTime * 0.3;
+            const pulse = 1 + Math.sin(elapsedTime * 3) * 0.05;
+            heartParticles.scale.set(pulse, pulse, pulse);
+
+            camera.position.y = Math.sin(elapsedTime * 0.5) * 1.5;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        // --- (၄) MODE CHANGING FUNCTION (ပြောင်းလဲခြင်း လုပ်ဆောင်ချက်) ---
+        function switchMode(mode) {
+            currentMode = mode;
+            const canvas3D = document.getElementById("canvas3D");
+
+            if (mode === '2D') {
+                // Button active ပြောင်းခြင်း
+                document.getElementById('btn2D').classList.add('active');
+                document.getElementById('btn3D').classList.remove('active');
+                
+                // စာသားအရောင်ပြောင်းခြင်း
+                mainTitle.className = "title pink-glow";
+                
+                // Canvas အဖွင့်အပိတ်
+                canvas2D.style.display = "block";
+                if(canvas3D) canvas3D.style.display = "none";
+                
+                // Animation ပြန်ပတ်ခြင်း
+                animate2D();
+            } else {
+                // Button active ပြောင်းခြင်း
+                document.getElementById('btn3D').classList.add('active');
+                document.getElementById('btn2D').classList.remove('active');
+                
+                // စာသားအရောင်ပြောင်းခြင်း
+                mainTitle.className = "title glow";
+                
+                // Canvas အဖွင့်အပိတ်
+                canvas2D.style.display = "none";
+                
+                // 3D ကုဒ်ကို စမောင်းရသေးရင် ဆောက်မယ်
+                if (!is3DInitialized) {
+                    init3D();
+                }
+                document.getElementById("canvas3D").style.display = "block";
+                animate3D();
+            }
+        }
+
+        // စတင်မောင်းနှင်ခြင်း
+        animate2D();
+
+        // Screen Size ပြောင်းရင် နှုတ်ခမ်းသားညှိခြင်း
+        window.addEventListener('resize', () => {
+            canvas2D.width = window.innerWidth;
+            canvas2D.height = window.innerHeight;
+            if(is3DInitialized) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+    </script>
 </body>
 </html>
